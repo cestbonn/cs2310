@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+    <link rel="stylesheet" href="../static/user_center.css"/>
+</head>
+
+<body>
+<div class="wrapper">
+    <div class="card">
+        <div class="card__cover">
+        <div class="header-image" style="background-image: url({{ data.basic_info.img }})"><div class="overlay"></div></div>
+        <div class="title-wrap"><h1 class="article-title">{{ data.username }}</h1></div>
+        <p class="card__cover-exerpt">haha</p>
+        </div>
+    </div>
+
+    <div class="card", id="toy_pet">
+      <div class="card__cover">
+        <div class="title-wrap"><h1 class="article-title">Toy&Pet</h1></div>
+        <p class="card__cover-exerpt">haha</p>
+      </div>
+    </div>
+    
+    <div class="card", id="activity_management">
+      <div class="card__cover">
+        <div class="title-wrap"><h1 class="article-title">Activities</h1></div>
+        {% if data.activity_info %}
+            <div class="subcard">
+                <p class="card__cover-exerpt">
+                    {%for k, v in data.activity_info.items()%}
+                        <li>{{k.replace('_', ' ').capitalize()}}: {{ v }}</li>
+                    {%endfor%}
+                </p>
+            </div>
+        {% else %}
+            <a href={{ url_for('registration_activity') }}><div class="subcard">add new activity!</div></a>
+        {% endif %}
+
+      </div>
+    </div>
+    
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script>
+  "use strict";
+  $('.card').on('click', function () {$(this).toggleClass('card--expanded');});
+</script>
+
+</body>
+</html>
