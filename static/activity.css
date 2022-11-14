@@ -76,7 +76,7 @@ body {
   overflow: hidden;
   background: white;
   height: 580px;
-  width: 400px;
+  width: 600px;
   box-shadow: 0 20px 30px -10px #ccc;
   transition: all 0.5s ease-in-out;
   margin: 20px;
@@ -86,8 +86,8 @@ body {
 .subcard {
   overflow: hidden;
   background: white;
-  height: 200px;
-  width: 360px;
+  height: 450px;
+  width: 560px;
   box-shadow: 0 20px 30px -10px #ccc;
   transition: all 0.5s ease-in-out;
   margin: 20px;

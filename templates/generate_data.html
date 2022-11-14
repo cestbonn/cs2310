@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>generate data</title>
+</head>
+<body>
+generating data...
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script>
+    function gen_data() {
+        console.log('go')
+    $.ajax({
+        url: '/generate',
+        timeout: 10000,
+        success: function () {},
+        error: function (xhr, type, errorThrown) {
+        }
+    })}
+    setInterval(gen_data, 1000)
+</script>
+</html>

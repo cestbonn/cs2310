@@ -86,7 +86,7 @@ body {
 .subcard {
   overflow: hidden;
   background: white;
-  height: 200px;
+  height: 100px;
   width: 360px;
   box-shadow: 0 20px 30px -10px #ccc;
   transition: all 0.5s ease-in-out;

@@ -10,16 +10,36 @@
 <div class="wrapper">
     <div class="card">
         <div class="card__cover">
-        <div class="header-image" style="background-image: url({{ data.basic_info.img }})"><div class="overlay"></div></div>
+        <div class="header-image" style="background-image: url({{ data.basic_info.arguments.img }})"><div class="overlay"></div></div>
         <div class="title-wrap"><h1 class="article-title">{{ data.username }}</h1></div>
-        <p class="card__cover-exerpt">haha</p>
+        <p class="card__cover-exerpt">
+        <div class="subcard">
+            <p class="card__cover-exerpt">
+                {%for k, v in data.basic_info.display.items()%}
+                    <li>{{k.replace('_', ' ').capitalize()}}: {{ v }}</li>
+                {%endfor%}
+            </p>
         </div>
     </div>
+</div>
 
     <div class="card", id="toy_pet">
       <div class="card__cover">
         <div class="title-wrap"><h1 class="article-title">Toy&Pet</h1></div>
-        <p class="card__cover-exerpt">haha</p>
+        {% if data.TP_info %}
+            {% for TP in data.TP_info %}
+            <div class="subcard" style="height: 100px">
+                <p class="card__cover-exerpt">
+                    {%for k, v in TP.items()%}
+                        <li>{{k.replace('_', ' ').capitalize()}}: {{ v }}</li>
+                    {%endfor%}
+                </p>
+            </div>
+            {% endfor %}
+        {% endif %}
+      <a href={{ url_for('registration_TP', user_id=data.user_id) }}>
+          <div class="subcard" style="line-height: 100px; text-align: center; height: 100px">register Pet or Toy!</div>
+      </a>
       </div>
     </div>
     
@@ -27,17 +47,19 @@
       <div class="card__cover">
         <div class="title-wrap"><h1 class="article-title">Activities</h1></div>
         {% if data.activity_info %}
-            <div class="subcard">
-                <p class="card__cover-exerpt">
-                    {%for k, v in data.activity_info.items()%}
-                        <li>{{k.replace('_', ' ').capitalize()}}: {{ v }}</li>
-                    {%endfor%}
-                </p>
-            </div>
+            <a href={{ url_for("activity", act_id=data.activity_info.display.activity_id, user_id=data.user_id) }}>
+                <div class="subcard">
+                    <p class="card__cover-exerpt">
+                        {%for k, v in data.activity_info.display.items()%}
+                            <li>{{k.replace('_', ' ').capitalize()}}: {{ v }}</li>
+                        {%endfor%}
+                    </p>
+                    <a href={{ url_for("end_activity", user_id=data.user_id) }}>end activity</a>
+                </div>
+            </a>
         {% else %}
-            <a href={{ url_for('registration_activity') }}><div class="subcard">add new activity!</div></a>
+            <a href={{ url_for('registration_activity', user_id=data.user_id) }}><div class="subcard" style="line-height: 100px; text-align: center; height: 100px";>add new activity!</div></a>
         {% endif %}
-
       </div>
     </div>
     
@@ -46,8 +68,6 @@
 
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script>
-  "use strict";
-  $('.card').on('click', function () {$(this).toggleClass('card--expanded');});
 </script>
 
 </body>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>admin center</title>
+    <link rel="stylesheet" href="../static/admin_center.css"/>
+</head>
+
+<body>
+<div class="wrapper">
+    <div class="card">
+        <div class="title-wrap"><h1 class="article-title">Users</h1></div>
+            {%for k, v in data.users.items()%}
+                <a href={{ url_for("user_center", user_id=k) }}><div class="subcard" style="background-image: url({{ v.img }}); background-repeat: no-repeat;
+                        background-size: 100px; background-position: center">
+                    <li>user id: {{ k }}</li>
+                    <li>username: {{ v.name }}</li>
+                    <li>activity id: {{ v.activity_id }}</li>
+                </div></a>
+            {%endfor%}
+    </div>
+
+    <div class="card", id="toy_pet">
+      <div class="card__cover">
+        <div class="title-wrap"><h1 class="article-title">Toy&Pet</h1></div>
+        {% if data['pt'] %}
+            {% for k, v in data['pt'].items()%}
+            <div class="subcard" style="height: 120px">
+                <p class="card__cover-exerpt">
+                    <li>id: {{ k }}</li>
+                    {%for _k, _v in v.items()%}
+                        <li>{{_k.replace('_', ' ').capitalize()}}: {{ _v }}</li>
+                    {%endfor%}
+                </p>
+            </div>
+            {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card", id="activity_management">
+      <div class="card__cover">
+        <div class="title-wrap"><h1 class="article-title">Activities</h1></div>
+        {% if data.activity %}
+            {% for k, v in data.activity.items() %}
+                <div class="subcard" style="height: 350px">
+                    Activity {{ k }} <br><br>
+                    {% for _v in v %}
+                    User: {{ _v }}
+                    <li class="details" id={{ 'heartrate_'+_v }}>heart rate: </li>
+                    <li class="details" id={{ 'temperature_'+_v }}>temperature: </li>
+                    <li class="details" id={{ 'alert_'+_v }}>alert: </li>
+                    <a href={{ url_for('activity', activity_id=k, user_id=_v) }}>check, </a>
+                    <a href={{ url_for("call", user_id=_v) }}>call, </a>
+                    <a href={{ url_for("cancel_call", user_id=_v) }}>cancel_call,  </a>
+                    <a class="details" id={{ 'answer_'+_v }}></a>
+                    <br><br>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <a href={{ url_for('registration_activity') }}><div class="subcard" style="line-height: 100px; text-align: center; height: 100px";>add new activity!</div></a>
+        {% endif %}
+      </div>
+    </div>
+
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script>
+    const user_ids = document.getElementsByClassName("details")
+    function readdata(user_ids) {
+        for (let i = 0; i < user_ids.length; i++) {
+            const user_id = user_ids[i].id.split('_')[1];
+            const data_type = user_ids[i].id.split('_')[0];
+            $.ajax({
+                url: `/read_data?user_id=${user_id}`,
+                timeout: 10000,
+                success: function (data) {
+                    user_ids[i].innerHTML=`${data_type}: ${data[data_type]}`;
+                },
+                error: function (xhr, type, errorThrown) {
+                }
+            })
+        }
+    }
+    setInterval(function () {readdata(user_ids);}, 1000)
+</script>
+
+</body>
+</html>

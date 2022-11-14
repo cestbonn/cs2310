@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>new registration</title>
+</head>
+<body>
+<form method="post">
+    <label for="title">Interest</label><br>
+    <input type="text" name="interest"><br>
+    <label for="title">Duration</label><br>
+    <input type="text" name="duration"><br>
+    <input type="submit" id="btn_login" value="submit"/><br>
+    {% if data.recommendation %}
+        <a id="recommendation">{{ data.recommendation }}</a><br>
+    {% endif %}
+    <a href = {{ url_for("user_center", user_id=data.user_id) }}>back to user center</a>
+</form>
+
+</body>
+</html>
