@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>waiting room</title>
+</head>
+<body>
+<a id="state">Calling {{ user_id }}</a>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script>
+    var user_id = "{{ user_id }}";
+    var state = document.getElementById("state")
+    function readdata() {
+        $.ajax({
+            url: `/read_data?user_id=${user_id}`,
+            timeout: 10000,
+            success: function (data) {
+                if (data['answer']){window.location.replace(`/video?user_id=${user_id}`)};
+                if (data['reject']){state.innerHTML=`${user_id} rejects your call.`};
+                console.log(data);
+            },
+            error: function (xhr, type, errorThrown) {
+            }
+        })
+    }
+    setInterval(function () {readdata();}, 1000)
+</script>
+</body>
+
+</html>

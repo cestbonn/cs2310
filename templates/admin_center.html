@@ -50,10 +50,10 @@
                     <li class="details" id={{ 'heartrate_'+_v }}>heart rate: </li>
                     <li class="details" id={{ 'temperature_'+_v }}>temperature: </li>
                     <li class="details" id={{ 'alert_'+_v }}>alert: </li>
-                    <a href={{ url_for('activity', activity_id=k, user_id=_v) }}>check, </a>
-                    <a href={{ url_for("call", user_id=_v) }}>call, </a>
-                    <a href={{ url_for("cancel_call", user_id=_v) }}>cancel_call,  </a>
-                    <a class="details" id={{ 'answer_'+_v }}></a>
+                    <a href={{ url_for('activity', activity_id=k, user_id=_v) }}><button class="button">check</button></a>
+                    <a href={{ url_for("call", user_id=_v) }}><button class="button">call</button></a>
+                    <a href={{ url_for("cancel_call", user_id=_v) }}><button  class="button" onclick="cancel_call()">cancel call</button></a>
+                    <!--<a class="details" id={{ 'answer_'+_v }}></a>-->
                     <br><br>
                     {% endfor %}
                 </div>
@@ -78,7 +78,9 @@
                 url: `/read_data?user_id=${user_id}`,
                 timeout: 10000,
                 success: function (data) {
-                    user_ids[i].innerHTML=`${data_type}: ${data[data_type]}`;
+                    if (data_type=="alert" && !data["alert"]){user_ids[i].innerHTML="SAFE";}
+                    else if (data_type=="alert" && data["alert"]){user_ids[i].innerHTML="ALERT";}
+                    else{user_ids[i].innerHTML=`${data_type}: ${data[data_type]}`;}
                 },
                 error: function (xhr, type, errorThrown) {
                 }
@@ -86,6 +88,10 @@
         }
     }
     setInterval(function () {readdata(user_ids);}, 1000)
+
+    function cancel_call(){
+        alert("call has been cancelled")
+    }
 </script>
 
 </body>

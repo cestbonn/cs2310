@@ -30,8 +30,8 @@
             <div class="card__cover">
                 <div class="title-wrap"><h1 class="article-title">CCTV</h1></div>
                 <video id="video" class="subcard" style=""></video>
-                </div>
             </div>
+        </div>
     </div>
 
     <script>
@@ -44,8 +44,7 @@
                     if(data.calling){
                         $("#call_response").html("admin is calling...     ");
                         $("#answer").html("    Answer   ");
-                        $("#answer").attr("href", `/answer?user_id=${user_id}`);
-                        console.log($("#answer"));
+                        $("#answer").attr("href", `/video?user_id=${user_id}`);
                         $("#reject").html("    reject   ");
                         $("#reject").attr("href", `/reject?user_id=${user_id}`);
                     }

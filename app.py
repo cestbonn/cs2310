@@ -32,6 +32,7 @@ class User(db.Model):
     calling = db.Column(db.Boolean)
     answer = db.Column(db.Boolean)
     calling_time = db.Column(db.Integer)
+    reject = db.Column(db.Integer)
 
 
 class Activity(db.Model):
@@ -57,11 +58,11 @@ with app.app_context():
     db.create_all()
     user1 = User(username='admin', password='123')
     user2 = User(username='Tom', password='123', age=22, birthday='2000-2-2', address='Sennott Square, Pittsburgh',
-                 img='../static/images/Tom_img.jpeg', alert=False, calling=False)
+                 img='../static/images/Tom_img.jpeg', alert=False, calling=False, reject=False)
     user3 = User(username='Jerry', password='123', age=23, birthday='1999-3-3', address='Sennott Square, Pittsburgh',
-                 img='../static/images/Jerry_img.jpeg', alert=False, calling=False)
+                 img='../static/images/Jerry_img.jpeg', alert=False, calling=False, reject=False)
     user4 = User(username='Spike', password='123', age=24, birthday='1998-4-4', address='Sennott Square, Pittsburgh',
-                 img='../static/images/Spike_img.jpeg', alert=False, calling=False)
+                 img='../static/images/Spike_img.jpeg', alert=False, calling=False, reject=False)
 
     toy1 = TP(name='Tom\'s Toy', type_='toy', belong_to=2)
     pet1 = TP(name='Jerry\'s Pet', type_='pet', belong_to=3)
@@ -73,6 +74,7 @@ with app.app_context():
         db.session.add(d)
 
     db.session.commit()
+
 
 # jump to login page
 @app.route('/')
@@ -130,13 +132,17 @@ def registration_activity():
     if request.method == 'POST':
         interest = request.form.get('interest')
         duration = request.form.get('duration')
-        if interest == 'play with Tom and Jerry' and duration == '120':
+        if 'Tom' in interest or 'Jerry' in interest:
             data = {'recommendation': f'we recommend you activity 1 !, {Activity.query.get(1).name}', 'user_id': user_id}
             participants = Activity.query.get(1).participant_ids
             Activity.query.get(1).participant_ids = participants + f'{user_id}&'
             db.session.commit()
         else:
-            data = {'recommendation': 'no available activity :(', 'user_id': user_id}
+            data = {'recommendation': 'no available activity :(. Register a new one :)', 'user_id': user_id}
+            new_act = Activity(tp_ids='', participant_ids=f'{user_id}&', start='12:00', current='12:45',
+                               duration=duration, alert=False, name=interest)
+            db.session.add(new_act)
+            db.session.commit()
         return render_template("register_activity.html", data=data)
     else:
         data = {'recommendation': None, 'user_id': user_id}
@@ -149,6 +155,8 @@ def end_activity():
     activity = Activity.query.filter(Activity.participant_ids.contains(f'{user_id}&')).first()
     participants = activity.participant_ids
     activity.participant_ids = participants.replace(f'{user_id}&', '')
+    if activity.participant_ids == '':
+        Activity.query.filter(Activity.id == activity.id).delete()
     db.session.commit()
     return "terminate success!"
 
@@ -189,6 +197,7 @@ def read_data():
     temperature = fake_temperature[user_id]
     alert = User.query.get(user_id).alert
     calling = User.query.get(user_id).calling
+    reject = User.query.get(user_id).reject
     if calling:
         answer = User.query.get(user_id).answer
     else:
@@ -197,7 +206,8 @@ def read_data():
             'heartrate_seq': heart_rate,
             'X': [str(i) for i in list(range(len(fake_heat_rate[user_id][0])))],
             'calling': calling,
-            'answer': answer}
+            'answer': answer,
+            'reject': reject}
 
 
 @app.route('/send_alert')
@@ -212,8 +222,9 @@ def send_alert():
 def call():
     user_id = request.args.get('user_id')
     User.query.get(user_id).calling = True
+    User.query.get(user_id).reject = False
     db.session.commit()
-    return f'call {user_id}!'
+    return render_template('waiting_room.html', user_id=user_id)
 
 
 @app.route('/cancell_call')
@@ -221,7 +232,8 @@ def cancel_call():
     user_id = request.args.get('user_id')
     User.query.get(user_id).calling = False
     db.session.commit()
-    return f'cancel call for {user_id}!'
+    ad_center = admin_center()
+    return ad_center
 
 
 @app.route('/answer')
@@ -231,12 +243,26 @@ def answer():
     db.session.commit()
     return 'answering...'
 
+
 @app.route('/reject')
 def reject():
     user_id = request.args.get('user_id')
     User.query.get(user_id).answer = False
+    User.query.get(user_id).calling = False
+    User.query.get(user_id).reject = True
     db.session.commit()
     return 'reject!'
+
+
+@app.route('/end_call')
+def end_call():
+    user_id = request.args.get('user_id')
+    User.query.get(user_id).calling = False
+    User.query.get(user_id).answer = False
+    db.session.commit()
+    return 'end call'
+
+
 @app.route('/generate_data')
 def generate_data():
     return render_template("generate_data.html")
@@ -262,6 +288,15 @@ def generate():
         v[1] += 1
     db.session.commit()
     return fake_heat_rate
+
+
+@app.route('/video')
+def video():
+    user_id = request.args.get('user_id')
+    data = {'user_id': user_id}
+    User.query.get(user_id).answer = True
+    db.session.commit()
+    return render_template('video.html', data=data)
 
 
 def basic_info(user_id):
